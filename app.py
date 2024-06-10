@@ -1,16 +1,16 @@
 from flask import Flask, request, jsonify, render_template
-import uplink
-import os
 from flask_frozen import Freezer
+import os
+import pcloud
 
 app = Flask(__name__)
 freezer = Freezer(app)
 
-# Storj Configuration
-STORJ_ACCESS_KEY = 'your-access-key'
-STORJ_SECRET_KEY = 'your-secret-key'
-STORJ_SATELLITE = 'your-satellite'
-STORJ_BUCKET = 'your-bucket'
+# pCloud Configuration
+PCLOUD_EMAIL = os.getenv('PCLOUD_EMAIL')
+PCLOUD_PASSWORD = os.getenv('PCLOUD_PASSWORD')
+
+client = pcloud.PyCloud(PCLOUD_EMAIL, PCLOUD_PASSWORD)
 
 @app.route('/')
 def index():
@@ -26,22 +26,9 @@ def upload_file():
         return jsonify({'error': 'No selected file'}), 400
 
     try:
-        # Initialize the Uplink client
-        config = uplink.Config()
-        config.set_satellite_address(STORJ_SATELLITE)
-        config.set_api_key(STORJ_ACCESS_KEY)
-        config.set_enc_access(STORJ_SECRET_KEY)
-        
-        client = uplink.Client(config)
-
-        # Open project
-        project = client.open_project()
-
-        # Upload the file
-        with project.upload(STORJ_BUCKET, file.filename) as upload:
-            upload.write(file.stream.read())
-
-        download_url = f'https://link.storjshare.io/{STORJ_BUCKET}/{file.filename}'
+        # Upload the file to pCloud
+        response = client.uploadfile(file, path='/')
+        download_url = response.get('download')
         return jsonify({'downloadUrl': download_url}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
