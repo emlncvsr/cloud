@@ -7,7 +7,7 @@ from tenacity import retry, wait_fixed, stop_after_attempt
 app = Flask(__name__)
 freezer = Freezer(app)
 
-# pCloud Configuration
+# Environment variables for pCloud credentials
 PCLOUD_EMAIL = os.getenv('PCLOUD_EMAIL')
 PCLOUD_PASSWORD = os.getenv('PCLOUD_PASSWORD')
 
@@ -22,7 +22,13 @@ def get_auth_token():
     response.raise_for_status()
     return response.json()['auth']
 
-auth_token = get_auth_token()
+# Get the auth token at runtime, not during freezing
+auth_token = None
+
+@app.before_first_request
+def initialize_auth_token():
+    global auth_token
+    auth_token = get_auth_token()
 
 @app.route('/')
 def index():
