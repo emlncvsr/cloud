@@ -1,4 +1,4 @@
-name: Python application
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -24,11 +23,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run Flask app
-      env:
-        FLASK_APP: app.py
-        FLASK_ENV: development
+    - name: Freeze Flask app
       run: |
-        nohup flask run --host=0.0.0.0 &
-        sleep 10s
-        curl -v http://localhost:5000
+        python freeze.py
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./build

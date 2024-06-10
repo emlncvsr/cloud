@@ -1,14 +1,20 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import uplink
 import os
+from flask_frozen import Freezer
 
 app = Flask(__name__)
+freezer = Freezer(app)
 
 # Storj Configuration
 STORJ_ACCESS_KEY = 'your-access-key'
 STORJ_SECRET_KEY = 'your-secret-key'
 STORJ_SATELLITE = 'your-satellite'
 STORJ_BUCKET = 'your-bucket'
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
