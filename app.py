@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_frozen import Freezer
 import os
-import pcloud
+import requests
 
 app = Flask(__name__)
 freezer = Freezer(app)
@@ -10,7 +10,15 @@ freezer = Freezer(app)
 PCLOUD_EMAIL = os.getenv('PCLOUD_EMAIL')
 PCLOUD_PASSWORD = os.getenv('PCLOUD_PASSWORD')
 
-client = pcloud.PyCloud(PCLOUD_EMAIL, PCLOUD_PASSWORD)
+# Authenticate with pCloud
+login_url = 'https://api.pcloud.com/login'
+login_data = {
+    'username': PCLOUD_EMAIL,
+    'password': PCLOUD_PASSWORD
+}
+login_response = requests.post(login_url, data=login_data)
+login_response.raise_for_status()
+auth_token = login_response.json()['auth']
 
 @app.route('/')
 def index():
@@ -27,8 +35,17 @@ def upload_file():
 
     try:
         # Upload the file to pCloud
-        response = client.uploadfile(file, path='/')
-        download_url = response.get('download')
+        upload_url = 'https://api.pcloud.com/uploadfile'
+        files = {
+            'file': (file.filename, file.stream, file.mimetype)
+        }
+        params = {
+            'auth': auth_token,
+            'folderid': 0  # Root folder
+        }
+        response = requests.post(upload_url, files=files, params=params)
+        response.raise_for_status()
+        download_url = response.json()['metadata'][0]['downloadlink']
         return jsonify({'downloadUrl': download_url}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
