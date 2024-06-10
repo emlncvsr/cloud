@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_frozen import Freezer
 import os
 import requests
+from tenacity import retry, wait_fixed, stop_after_attempt
 
 app = Flask(__name__)
 freezer = Freezer(app)
@@ -10,15 +11,18 @@ freezer = Freezer(app)
 PCLOUD_EMAIL = os.getenv('PCLOUD_EMAIL')
 PCLOUD_PASSWORD = os.getenv('PCLOUD_PASSWORD')
 
-# Authenticate with pCloud
-login_url = 'https://api.pcloud.com/login'
-login_data = {
-    'username': PCLOUD_EMAIL,
-    'password': PCLOUD_PASSWORD
-}
-login_response = requests.post(login_url, data=login_data)
-login_response.raise_for_status()
-auth_token = login_response.json()['auth']
+@retry(wait=wait_fixed(2), stop=stop_after_attempt(5))
+def get_auth_token():
+    login_url = 'https://api.pcloud.com/login'
+    login_data = {
+        'username': PCLOUD_EMAIL,
+        'password': PCLOUD_PASSWORD
+    }
+    response = requests.post(login_url, data=login_data)
+    response.raise_for_status()
+    return response.json()['auth']
+
+auth_token = get_auth_token()
 
 @app.route('/')
 def index():
