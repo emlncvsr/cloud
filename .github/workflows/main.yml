@@ -59,15 +59,14 @@ jobs:
       - name: Install Render CLI
         run: |
           curl -fsSL https://cli.render.com/install.sh | sudo bash
-          echo 'export PATH=$PATH:/usr/local/bin' >> ~/.bashrc
-          source ~/.bashrc
+          sudo mv render /usr/local/bin
 
       - name: Verify Render CLI Installation
-        run: render --version
+        run: /usr/local/bin/render --version
 
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          render login --api-key $RENDER_API_KEY
-          render services create --name my-flask-app --repo https://github.com/${{ github.repository }} --branch main --env production
+          /usr/local/bin/render login --api-key $RENDER_API_KEY
+          /usr/local/bin/render services create --name my-flask-app --repo https://github.com/${{ github.repository }} --branch main --env production

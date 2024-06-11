@@ -24,10 +24,11 @@ def get_auth_token():
     response = requests.post(login_url, data=login_data)
     response.raise_for_status()
     response_data = response.json()
-    print(f"Login response: {response_data}")
+    print(f"Login response: {response_data}")  # Debug line
     if 'auth' in response_data:
         return response_data['auth']
     else:
+        print(f"Error: 'auth' key not found in response")  # Additional error handling
         raise KeyError("'auth' key not found in the response")
 
 # Initialize auth_token
