@@ -1,12 +1,7 @@
-from app import freezer
+from app import freezer, app
 
-# Mock the authentication process during freezing
-def mock_get_auth_token():
-    return "mocked_auth_token"
-
-# Replace the actual get_auth_token function with the mock one during freezing
-freezer.app.view_functions['initialize_auth_token'] = lambda: None
-freezer.app.config['auth_token'] = mock_get_auth_token()
+# Set the freezing flag to True
+app.config['IS_FREEZING'] = True
 
 if __name__ == '__main__':
     freezer.freeze()

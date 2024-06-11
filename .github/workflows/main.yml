@@ -24,10 +24,11 @@ jobs:
           pip install -r requirements.txt
 
       - name: Set environment variables
-        run: echo Environment variables set
         env:
           PCLOUD_EMAIL: ${{ secrets.PCLOUD_EMAIL }}
           PCLOUD_PASSWORD: ${{ secrets.PCLOUD_PASSWORD }}
+          IS_FREEZING: 'True'
+        run: echo Environment variables set
 
       - name: Freeze Flask app
         run: |
