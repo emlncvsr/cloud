@@ -16,20 +16,23 @@ PCLOUD_PASSWORD = os.getenv('PCLOUD_PASSWORD')
 
 @retry(wait=wait_fixed(2), stop=stop_after_attempt(5))
 def get_auth_token():
-    login_url = 'https://api.pcloud.com/login'
+    login_url = 'https://api.pcloud.com/oauth2/token'
     login_data = {
+        'client_id': 'YOUR_CLIENT_ID',  # Use your pCloud client ID
+        'client_secret': 'YOUR_CLIENT_SECRET',  # Use your pCloud client secret
         'username': PCLOUD_EMAIL,
-        'password': PCLOUD_PASSWORD
+        'password': PCLOUD_PASSWORD,
+        'grant_type': 'password'
     }
     response = requests.post(login_url, data=login_data)
     response.raise_for_status()
     response_data = response.json()
     print(f"Login response: {response_data}")  # Debug line
-    if 'auth' in response_data:
-        return response_data['auth']
+    if 'access_token' in response_data:
+        return response_data['access_token']
     else:
-        print(f"Error: 'auth' key not found in response")  # Additional error handling
-        raise KeyError("'auth' key not found in the response")
+        print(f"Error: 'access_token' key not found in response")  # Additional error handling
+        raise KeyError("'access_token' key not found in the response")
 
 # Initialize auth_token
 auth_token = None
@@ -62,7 +65,7 @@ def upload_file():
             'file': (file.filename, file.stream, file.mimetype)
         }
         params = {
-            'auth': auth_token,
+            'access_token': auth_token,
             'folderid': 0  # Root folder
         }
         response = requests.post(upload_url, files=files, params=params)
