@@ -11,30 +11,25 @@ freezer = Freezer(app)
 app.config['IS_FREEZING'] = os.getenv('IS_FREEZING', 'False') == 'True'
 
 # pCloud Configuration
-PCLOUD_CLIENT_ID = os.getenv('PCLOUD_CLIENT_ID')
-PCLOUD_CLIENT_SECRET = os.getenv('PCLOUD_CLIENT_SECRET')
-PCLOUD_USERNAME = os.getenv('PCLOUD_USERNAME')
+PCLOUD_EMAIL = os.getenv('PCLOUD_EMAIL')
 PCLOUD_PASSWORD = os.getenv('PCLOUD_PASSWORD')
 
 @retry(wait=wait_fixed(2), stop=stop_after_attempt(5))
 def get_auth_token():
-    login_url = 'https://api.pcloud.com/oauth2_token'
+    login_url = 'https://api.pcloud.com/login'
     login_data = {
-        'client_id': PCLOUD_CLIENT_ID,
-        'client_secret': PCLOUD_CLIENT_SECRET,
-        'username': PCLOUD_USERNAME,
-        'password': PCLOUD_PASSWORD,
-        'grant_type': 'password'
+        'username': PCLOUD_EMAIL,
+        'password': PCLOUD_PASSWORD
     }
     response = requests.post(login_url, data=login_data)
     response.raise_for_status()
     response_data = response.json()
     print(f"Login response: {response_data}")  # Debug line
-    if 'access_token' in response_data:
-        return response_data['access_token']
+    if 'auth' in response_data:
+        return response_data['auth']
     else:
-        print(f"Error: 'access_token' key not found in response")  # Additional error handling
-        raise KeyError("'access_token' key not found in the response")
+        print(f"Error: 'auth' key not found in response")  # Additional error handling
+        raise KeyError("'auth' key not found in the response")
 
 # Initialize auth_token
 auth_token = None
@@ -67,7 +62,7 @@ def upload_file():
             'file': (file.filename, file.stream, file.mimetype)
         }
         params = {
-            'access_token': auth_token,
+            'auth': auth_token,
             'folderid': 0  # Root folder
         }
         response = requests.post(upload_url, files=files, params=params)
