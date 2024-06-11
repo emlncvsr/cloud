@@ -59,6 +59,10 @@ jobs:
       - name: Install Render CLI
         run: |
           curl -fsSL https://cli.render.com/install.sh | sudo bash
+          export PATH=$PATH:/usr/local/bin
+
+      - name: Verify Render CLI Installation
+        run: render --version
 
       - name: Deploy to Render
         env:
