@@ -6,12 +6,12 @@ on:
       - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -24,40 +24,18 @@ jobs:
           pip install -r requirements.txt
 
       - name: Set environment variables
-        run: echo "Setting environment variables"
         env:
           PCLOUD_EMAIL: ${{ secrets.PCLOUD_EMAIL }}
           PCLOUD_PASSWORD: ${{ secrets.PCLOUD_PASSWORD }}
           IS_FREEZING: 'True'
+        run: echo Environment variables set
 
       - name: Freeze Flask app
-        run: python freeze.py
+        run: |
+          python freeze.py
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
-
-  run-backend:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Run Flask app
-        run: |
-          nohup python app.py &
-        env:
-          PCLOUD_EMAIL: ${{ secrets.PCLOUD_EMAIL }}
-          PCLOUD_PASSWORD: ${{ secrets.PCLOUD_PASSWORD }}
