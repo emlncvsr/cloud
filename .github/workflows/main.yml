@@ -56,13 +56,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
-      - name: Download and Install Render CLI
+      - name: Install Render CLI
         run: |
-          latest_release_url=$(curl -s https://api.github.com/repos/renderinc/render/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url')
-          curl -L $latest_release_url -o render-cli-linux.tar.gz
+          curl -L "https://github.com/renderinc/render/releases/download/v0.1.5/render-cli-linux-amd64.tar.gz" -o render-cli-linux.tar.gz
           tar -xzf render-cli-linux.tar.gz
           sudo mv render /usr/local/bin
 
