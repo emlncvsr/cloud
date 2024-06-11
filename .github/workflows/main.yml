@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.8"
+          python-version: '3.8'
 
       - name: Install dependencies
         run: |
@@ -28,7 +28,7 @@ jobs:
         env:
           PCLOUD_EMAIL: ${{ secrets.PCLOUD_EMAIL }}
           PCLOUD_PASSWORD: ${{ secrets.PCLOUD_PASSWORD }}
-          IS_FREEZING: "True"
+          IS_FREEZING: 'True'
 
       - name: Freeze Flask app
         run: python freeze.py
@@ -49,7 +49,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.8"
+          python-version: '3.8'
 
       - name: Install dependencies
         run: |
