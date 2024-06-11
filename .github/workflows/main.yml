@@ -56,13 +56,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Install Render CLI
+        run: |
+          curl -L "https://github.com/renderinc/render/releases/latest/download/render-cli-linux-amd64.tar.gz" -o render-cli-linux.tar.gz
+          tar -xzf render-cli-linux.tar.gz
+          sudo mv render /usr/local/bin
+
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          # Install Render CLI
-          curl -s https://api.github.com/repos/renderinc/render/releases/latest | grep "browser_download_url.*render-cli-linux" | cut -d '"' -f 4 | wget -qi -
-          tar -xzf render-cli-linux.tar.gz
-          sudo mv render /usr/local/bin
           render login --api-key $RENDER_API_KEY
           render services create --name my-flask-app --repo https://github.com/${{ github.repository }} --branch main --env production
