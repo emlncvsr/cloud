@@ -61,6 +61,8 @@ jobs:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
           # Install Render CLI
-          curl -fsSL https://cli.render.com/install.sh | bash
+          curl -s https://api.github.com/repos/renderinc/render/releases/latest | grep "browser_download_url.*render-cli-linux" | cut -d '"' -f 4 | wget -qi -
+          tar -xzf render-cli-linux.tar.gz
+          sudo mv render /usr/local/bin
           render login --api-key $RENDER_API_KEY
           render services create --name my-flask-app --repo https://github.com/${{ github.repository }} --branch main --env production
