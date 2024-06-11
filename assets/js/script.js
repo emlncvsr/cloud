@@ -1,31 +1,27 @@
-async function uploadFile() {
-    const fileInput = document.getElementById('fileInput');
-    if (fileInput.files.length === 0) {
-        alert('Please select a file.');
-        return;
-    }
+function uploadFile() {
+    const input = document.getElementById('fileInput');
+    const file = input.files[0];
 
-    const file = fileInput.files[0];
-    const formData = new FormData();
-    formData.append('file', file);
+    if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
 
-    const response = await fetch('/upload', {
-        method: 'POST',
-        body: formData
-    });
-
-    if (response.ok) {
-        const data = await response.json();
-        document.getElementById('downloadLink').value = data.downloadUrl;
-        document.getElementById('linkContainer').style.display = 'block';
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.downloadUrl) {
+                document.getElementById('result').innerText = `File uploaded successfully. Download URL: ${data.downloadUrl}`;
+            } else {
+                document.getElementById('result').innerText = `Error: ${data.error}`;
+            }
+        })
+        .catch(error => {
+            document.getElementById('result').innerText = `Error: ${error}`;
+        });
     } else {
-        alert('Failed to upload file.');
+        alert('Please select a file first.');
     }
-}
-
-function copyLink() {
-    const downloadLink = document.getElementById('downloadLink');
-    downloadLink.select();
-    document.execCommand('copy');
-    alert('Link copied to clipboard.');
 }

@@ -7,16 +7,11 @@
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Upload a File</h1>
-        <input type="file" id="fileInput">
-        <button onclick="uploadFile()">Upload</button>
-        <div id="linkContainer" style="display: none;">
-            <p>Download Link:</p>
-            <input type="text" id="downloadLink" readonly>
-            <button onclick="copyLink()">Copy Link</button>
-        </div>
-    </div>
+    <h1>File Upload</h1>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Upload</button>
+    <div id="result"></div>
+
     <script src="assets/js/script.js"></script>
 </body>
 </html>
