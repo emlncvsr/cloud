@@ -11,16 +11,18 @@ freezer = Freezer(app)
 app.config['IS_FREEZING'] = os.getenv('IS_FREEZING', 'False') == 'True'
 
 # pCloud Configuration
-PCLOUD_EMAIL = os.getenv('PCLOUD_EMAIL')
+PCLOUD_CLIENT_ID = os.getenv('PCLOUD_CLIENT_ID')
+PCLOUD_CLIENT_SECRET = os.getenv('PCLOUD_CLIENT_SECRET')
+PCLOUD_USERNAME = os.getenv('PCLOUD_USERNAME')
 PCLOUD_PASSWORD = os.getenv('PCLOUD_PASSWORD')
 
 @retry(wait=wait_fixed(2), stop=stop_after_attempt(5))
 def get_auth_token():
-    login_url = 'https://api.pcloud.com/oauth2/token'
+    login_url = 'https://api.pcloud.com/oauth2_token'
     login_data = {
-        'client_id': 'YOUR_CLIENT_ID',  # Use your pCloud client ID
-        'client_secret': 'YOUR_CLIENT_SECRET',  # Use your pCloud client secret
-        'username': PCLOUD_EMAIL,
+        'client_id': PCLOUD_CLIENT_ID,
+        'client_secret': PCLOUD_CLIENT_SECRET,
+        'username': PCLOUD_USERNAME,
         'password': PCLOUD_PASSWORD,
         'grant_type': 'password'
     }
