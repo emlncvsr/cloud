@@ -42,10 +42,12 @@
     </style>
   </head>
   <body>
-    <h1>File Upload</h1>
-    <input type="file" id="fileInput" />
-    <button onclick="uploadFile()">Upload</button>
-    <div id="result"></div>
+    <div class="container">
+      <h1>File Upload</h1>
+      <input type="file" id="fileInput" />
+      <button onclick="uploadFile()">Upload</button>
+      <div id="result"></div>
+    </div>
 
     <script>
       function uploadFile() {
@@ -56,7 +58,7 @@
           const formData = new FormData();
           formData.append("file", file);
 
-          fetch("/upload", {
+          fetch("https://cloud-8t59.onrender.com/upload", {
             method: "POST",
             body: formData,
           })
