@@ -3,3 +3,4 @@ Werkzeug==0.16.1
 Frozen-Flask
 requests
 tenacity
+Jinja2==2.11.3
